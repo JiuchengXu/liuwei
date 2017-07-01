@@ -127,7 +127,7 @@ typedef enum{
 extern volatile unsigned char g_CaptureImage;
 extern int g_uiSimplelinkRole = ROLE_INVALID;
 
-unsigned char g_image_buffer[1][80 * 1024];
+unsigned char g_image_buffer[2][40 * 1024];
 //unsigned char *g_image_buffer[1];
 static volatile unsigned int buffer_len = 0;
 volatile unsigned char buf_switch = 0;
@@ -766,8 +766,8 @@ static void CaptureImage()
 			finish_flag = 0;
 
 			if (g_ulStaIp) {
-				//sendmsg(g_ulStaIp, CLIENT_PORT, g_image_buffer[buf_switch ^ 1], buffer_len);
-				sendmsg(g_ulStaIp, CLIENT_PORT, g_image_buffer[0], buffer_len);
+				sendmsg(g_ulStaIp, CLIENT_PORT, g_image_buffer[buf_switch ^ 1], buffer_len);
+				//sendmsg(g_ulStaIp, CLIENT_PORT, g_image_buffer[0], buffer_len);
 				//MAP_CameraCaptureStart(CAMERA_BASE);
 			}
 		}
@@ -939,7 +939,7 @@ static void CameraIntHandler()
 				}
 			}
 		} else {
-			if (g_frame_size_in_bytes + 256 >= (sizeof(g_image_buffer) )) { // overflow
+			if (g_frame_size_in_bytes + 256 >= (sizeof(g_image_buffer) / 2)) { // overflow
 				find_head_flag = 0; //drop this frame
 				g_frame_size_in_bytes = 0;
 				return;
@@ -956,7 +956,7 @@ static void CameraIntHandler()
 					buffer_len = g_frame_size_in_bytes;
 					g_frame_size_in_bytes = 0;
 
-					//buf_switch ^= 1;
+					buf_switch ^= 1;
 					finish_flag = 1;
 
 					//MAP_CameraCaptureStop(CAMERA_BASE, true);//new
