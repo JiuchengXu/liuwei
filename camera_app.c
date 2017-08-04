@@ -726,6 +726,8 @@ static long InitCameraComponents()
 	//
 	CamControllerInit();
 
+	charge_led_ctrl(1);
+
 	//
 	// Initialize camera sensor
 	//

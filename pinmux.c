@@ -58,11 +58,18 @@ void PinMuxConfig(void)
     // Enable Peripheral Clocks 
     //
 	MAP_PRCMPeripheralClkEnable(PRCM_CAMERA, PRCM_RUN_MODE_CLK);
-	//MAP_PRCMPeripheralClkEnable(PRCM_GPIOA2, PRCM_RUN_MODE_CLK);
-	//MAP_PRCMPeripheralClkEnable(PRCM_GPIOA3, PRCM_RUN_MODE_CLK);
 	MAP_PRCMPeripheralClkEnable(PRCM_GPIOA1, PRCM_RUN_MODE_CLK);
-	//MAP_PRCMPeripheralClkEnable(PRCM_GPIOA0, PRCM_RUN_MODE_CLK);
 	MAP_PRCMPeripheralClkEnable(PRCM_GPIOA4, PRCM_RUN_MODE_CLK);
+
+	    // Enable Peripheral Clocks
+	    //
+	    PRCMPeripheralClkEnable(PRCM_GPIOA0, PRCM_RUN_MODE_CLK);
+
+	    //
+	     // Configure PIN_62 for GPIO Output
+	     //
+	     PinTypeGPIO(PIN_62, PIN_MODE_0, false);
+	     GPIODirModeSet(GPIOA0_BASE, 0x80, GPIO_DIR_MODE_OUT);
 
 	//rst
     MAP_PinTypeGPIO(PIN_18, PIN_MODE_0, false);
@@ -71,14 +78,12 @@ void PinMuxConfig(void)
 
     //  power
     MAP_PinTypeGPIO(PIN_53, PIN_MODE_0, false);
-    //PinConfigSet(PIN_53, PIN_STRENGTH_2MA, PIN_TYPE_STD_PU);
     MAP_GPIODirModeSet(GPIOA4_BASE, 0x40, GPIO_DIR_MODE_OUT);
 
     //
     // Configure PIN_01 for GPIO Output
     //
     MAP_PinTypeGPIO(PIN_01, PIN_MODE_0, false);
-    //PinConfigSet(PIN_01, PIN_STRENGTH_2MA, PIN_TYPE_STD_PU);
     PinConfigSet(PIN_01, PIN_STRENGTH_2MA, PIN_TYPE_OD);
     MAP_GPIODirModeSet(GPIOA1_BASE, 0x4, GPIO_DIR_MODE_OUT);
 
@@ -86,7 +91,6 @@ void PinMuxConfig(void)
     // Configure PIN_02 for GPIO Input
     //
     MAP_PinTypeGPIO(PIN_02, PIN_MODE_0, false);
-    //PinConfigSet(PIN_02, PIN_STRENGTH_2MA, PIN_TYPE_STD_PU);
     PinConfigSet(PIN_02, PIN_STRENGTH_2MA, PIN_TYPE_OD);
     MAP_GPIODirModeSet(GPIOA1_BASE, 0x8, GPIO_DIR_MODE_IN);
 
@@ -115,11 +119,6 @@ void PinMuxConfig(void)
     //
     MAP_PinTypeCamera(PIN_61, PIN_MODE_4);
     PinConfigSet(PIN_61, PIN_STRENGTH_2MA, PIN_TYPE_STD_PU);
-    //
-    // Configure PIN_02 for Camera0 pXCLK
-    //
-    //MAP_PinTypeCamera(PIN_02, PIN_MODE_4);
-    //PinConfigSet(PIN_02, PIN_STRENGTH_2MA, PIN_TYPE_STD_PU);
 
     //
     // Configure PIN_03 for Camera0 VSYNC

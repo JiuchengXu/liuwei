@@ -194,3 +194,11 @@ int ads1110_test(u8 *data)
 
 	return ads1110_read(data);
 }
+
+void charge_led_ctrl(int on)
+{
+	if (on)
+		MAP_GPIOPinWrite(GPIOA0_BASE, 0x80, 0x80);
+	else
+		MAP_GPIOPinWrite(GPIOA0_BASE, 0x80, 0x0);
+}
