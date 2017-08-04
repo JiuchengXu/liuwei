@@ -746,6 +746,19 @@ static long InitCameraComponents()
 //!                               
 //
 //*****************************************************************************
+void send_adc(void)
+{
+	unsigned char data[32];
+	int i;
+
+	memset(data, 0, sizeof(data));
+
+	i = ads1110_read(data);
+
+	data[31] = i;
+
+	udp_sendmsg(g_ulStaIp, 8888, data, sizeof(data));
+}
 static void CaptureImage()
 {
 	int i;
