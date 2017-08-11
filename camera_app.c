@@ -81,7 +81,7 @@ extern void udp_init(void);
 #define AP_SSID_LEN_MAX         (33)
 #define ROLE_INVALID            (-5)
 #define CLIENT_PORT		8889
-#define WIFI_ID				"cam000001"
+#define WIFI_ID				"cam000002"
 #define WIFI_PASSWD			"cam123456"
 
 struct ImgFormat;
@@ -670,6 +670,8 @@ void StartCamera(void)
 		LOOP_FOREVER();
 	}    
 
+	voltage_monitor_create();
+
 #ifdef ENABLE_JPEG
 	//
 	// Configure Sensor in Capture Mode
@@ -686,6 +688,7 @@ void StartCamera(void)
 	while(!IS_IP_LEASED(g_ulStatus))
 	{
 	      //wating for the client to connect
+		osi_Sleep(100);
 	}
 
 	g_CaptureImage = 1;
@@ -718,15 +721,9 @@ static long InitCameraComponents()
 	long lRetVal = -1;
 
 	//
-	// Configure device pins
-	//
-	PinMuxConfig();
-	//
 	// Initialize camera controller
 	//
 	CamControllerInit();
-
-	charge_led_ctrl(1);
 
 	//
 	// Initialize camera sensor
@@ -748,19 +745,12 @@ static long InitCameraComponents()
 //!                               
 //
 //*****************************************************************************
-void send_adc(void)
+void send_debug(char *s, int len)
 {
-	unsigned char data[32];
-	int i;
-
-	memset(data, 0, sizeof(data));
-
-	i = ads1110_read(data);
-
-	data[31] = i;
-
-	udp_sendmsg(g_ulStaIp, 8888, data, sizeof(data));
+	if (g_ulStaIp != 0)
+		udp_sendmsg(g_ulStaIp, 8888, s, len);
 }
+
 static void CaptureImage()
 {
 	int i;

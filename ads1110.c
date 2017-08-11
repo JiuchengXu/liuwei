@@ -6,9 +6,14 @@
 #include "pin.h"
 #include "gpio.h"
 #include "prcm.h"
+#include "utils.h"
 #include "rom.h"
 #include "rom_map.h"
-#include "utils.h"
+#include "prcm.h"
+
+// Simplelink includes
+#include "simplelink.h"
+#include "osi.h"
 
 typedef unsigned char	u8;
 typedef unsigned short	u16;
@@ -26,7 +31,7 @@ typedef unsigned int	u32;
 #define SDA_IN		MAP_GPIODirModeSet(GPIOA1_BASE, 0x8, GPIO_DIR_MODE_IN);
 #define SDA_OUT		MAP_GPIODirModeSet(GPIOA1_BASE, 0x8, GPIO_DIR_MODE_OUT);
 
-#define delay();		MAP_UtilsDelay(40/3 * 10) //50us
+#define delay();		MAP_UtilsDelay(40/3 * 50) //50us
 
 void i2c_start(void)
 {
@@ -166,7 +171,7 @@ int ads1110_read(u8 *data)
 	data[0] = i2c_read();
 	data[1] = i2c_read();
 
-	data[2] = i2c_read();
+	//data[2] = i2c_read();
 
 	i2c_stop();
 
@@ -188,6 +193,37 @@ int ads1110_write(u8 data)
 	return 0;
 }
 
+static u16 vol_bak;
+
+int low_voltage(void)
+{
+	u8 data[30] = {0};
+	short u16data;
+	int ret = ads1110_read(data); // div 16
+
+	if (ret != 0)
+		return -1;
+
+	u16data = (data[0] << 8) | data[1];
+
+	u16data >>= 4;
+	u16data *= 3;
+
+	if (vol_bak == 0)
+		vol_bak = u16data;
+	else
+		vol_bak = (vol_bak + u16data) >> 1;
+
+	//sprintf(data, "###%d", u16data);
+
+	//send_debug(data, strlen(data));
+
+	if (vol_bak < 3100)
+		return 1;
+
+	return 0;
+}
+
 int ads1110_test(u8 *data)
 {
 	MAP_UtilsDelay((unsigned long)10000000000UL);
@@ -202,3 +238,35 @@ void charge_led_ctrl(int on)
 	else
 		MAP_GPIOPinWrite(GPIOA0_BASE, 0x80, 0x0);
 }
+
+
+void voltage_task(void *data)
+{
+	int ret;
+
+	while (1) {
+		osi_Sleep(1000); //1s
+		//send_adc();
+		ret = low_voltage();
+
+		if (ret > 0)
+				charge_led_ctrl(1);
+		else if (ret == 0)
+				charge_led_ctrl(0);
+	}
+}
+
+int voltage_monitor_create(void)
+{
+	int lRetVal;
+
+	  lRetVal = osi_TaskCreate(voltage_task,(signed char *) "voltage_task",
+	                                             1024, 0, 1, 0);
+	  if(lRetVal < 0)
+	  {
+	      return -1;
+	  }
+
+	  return 0;
+}
+

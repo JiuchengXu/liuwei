@@ -304,6 +304,18 @@ int main()
   //
   BoardInit();
   
+
+  	//
+  	// Configure device pins
+  	//
+  	PinMuxConfig();
+
+  	if (low_voltage() > 0)
+  		charge_led_ctrl(1);
+  	else if (low_voltage() == 0)
+  		charge_led_ctrl(0);
+
+
   //
   // Configuring UART
   //
