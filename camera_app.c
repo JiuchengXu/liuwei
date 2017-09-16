@@ -81,8 +81,8 @@ extern void udp_init(void);
 #define AP_SSID_LEN_MAX         (33)
 #define ROLE_INVALID            (-5)
 #define CLIENT_PORT		8889
-#define WIFI_ID				"cam000002"
-#define WIFI_PASSWD			"cam123456"
+#define WIFI_ID				"IPCAM000012"
+#define WIFI_PASSWD			"cam000012"
 
 struct ImgFormat;
 

@@ -437,17 +437,18 @@ int StartSensorInJpegMode(void)
 	write_SCCB(0xff, 0x00); //Select bank0
 	write_SCCB(0xc7, 0x10);
 
-	OV2640_Auto_Exposure(1);
+	OV2640_Auto_Exposure(0);
 
 	//OV2640_Light_Mode(0);
 
-	OV2640_Brightness(1);
+	OV2640_Brightness(4);
 
 	OV2640_Contrast(4);
 
 	OV2640_Color_Saturation(4);
 
-	//SCCB_WR_Reg(0, 0x30);
+	SCCB_WR_Reg(0xff, 1);
+	SCCB_WR_Reg(0, 0x00);
 
 	//OV2640_Special_Effects(0);
 
